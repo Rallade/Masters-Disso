@@ -3,3 +3,5 @@ dockerfile
 /.vscode
 /multi_cased*
 */__pycache__
+/fine_tune/*
+!/fine_tune/*.py

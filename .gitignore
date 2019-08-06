@@ -1,0 +1,4 @@
+/tmp*
+dockerfile
+/.vscode
+/multi_cased*

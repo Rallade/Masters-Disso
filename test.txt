@@ -1,0 +1,1 @@
+bert-serving-start -model_dir=multi_cased_L-12_H-768_A-12/ -tuned_model_dir=fine_tune/finetuned_lm_tf -ckpt_name=fine_tuned_tf.ckpt -pooling_strategy=NONE -max_seq_len=NONE -num_worker=1

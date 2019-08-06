@@ -5,3 +5,5 @@ dockerfile
 */__pycache__
 /fine_tune/*
 !/fine_tune/*.py
+Refactor/clean_data.csv
+Refactor/no_duplicates.csv

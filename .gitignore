@@ -2,3 +2,4 @@
 dockerfile
 /.vscode
 /multi_cased*
+*/__pycache__

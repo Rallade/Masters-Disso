@@ -1,6 +1,5 @@
 from pymongo import MongoClient
 import pooling_modes as pooling
-import numpy as np
 from multiprocessing import Pool
 pool = Pool(6)
 import time
@@ -30,16 +29,24 @@ while True:
             embeddings.append(record['full_pros_embedding'])
         except:
             embeddings.append(None)
-    pro_means = list(pool.map(pooling.reduce_max,embeddings))
+    pro_means = list(pool.map(pooling.reduce_mean,embeddings))
+    pro_maxes_s = list(pool.map(pooling.reduce_max_single,embeddings))
+    pro_maxes_t = list(pool.map(pooling.reduce_max_total,embeddings))
     embeddings = []
     for record in records:
         try:
             embeddings.append(record['full_cons_embedding'])
         except:
             embeddings.append(None)
-    con_means = list(pool.map(pooling.reduce_max,embeddings))
+    con_means = list(pool.map(pooling.reduce_mean,embeddings))
+    con_maxes_s = list(pool.map(pooling.reduce_max_single,embeddings))
+    con_maxes_t = list(pool.map(pooling.reduce_max_total,embeddings))
     attach_listfields_to_records("mean_pooling_pros", pro_means, records, coll)
+    attach_listfields_to_records("max_pooling_single_pros", pro_maxes_s, records, coll)
+    attach_listfields_to_records("max_pooling_total_pros", pro_maxes_t, records, coll)
     attach_listfields_to_records("mean_pooling_cons", con_means, records, coll)
+    attach_listfields_to_records("max_pooling_single_cons", con_maxes_s, records, coll)
+    attach_listfields_to_records("max_pooling_total_cons", con_maxes_t, records, coll)
     if not records:
         break
 t1 = time.time()

@@ -109,3 +109,5 @@ for i, record in enumerate(full):
             db_upload.attach_listfields_to_records("title_tokens", tokens, batch, coll)
             print("Percentage till completion:", str(i*100/len(full)) + "%")
         batch = []
+
+import fix_missing

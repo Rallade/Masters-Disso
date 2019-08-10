@@ -7,3 +7,5 @@ dockerfile
 !/fine_tune/*.py
 Refactor/clean_data.csv
 Refactor/no_duplicates.csv
+
+*/test.py

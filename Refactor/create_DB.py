@@ -111,3 +111,6 @@ for i, record in enumerate(full):
         batch = []
 
 import fix_missing
+
+from add_pooling_to_DB import create_basic_embeddings
+create_basic_embeddings()

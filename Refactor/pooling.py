@@ -23,9 +23,9 @@ def reduce_max_single(sentence_matrix):
     if sentence_matrix is None:
         return None
     sentence_matrix = np.array(sentence_matrix)
-    norms = np.linalg.norm(sentence_matrix[1:-1], ord=2, axis= 1) #remove start and end tokens
+    norms = np.linalg.norm(sentence_matrix, ord=2, axis= 1) #remove start and end tokens
     index = np.argmax(norms)
-    return sentence_matrix[index]
+    return sentence_matrix[index] #account for token removal
 
 def reduce_max_total(sentence_matrix):
     if sentence_matrix is None:

@@ -17,4 +17,6 @@ def cleanup(raw_data_file_name, clean_data_file_name):
                 if (new_row['Pros'] != "" or new_row['Cons'] != ""):
                     new_row['Pros'] = new_row['Pros'].replace('\n', ' ||| ')
                     new_row['Cons'] = new_row['Cons'].replace('\n', ' ||| ')
+                    new_row['Pros'] = new_row['Pros'].replace('´', "'" )
+                    new_row['Cons'] = new_row['Cons'].replace('´', "'")
                     writer.writerow(new_row)

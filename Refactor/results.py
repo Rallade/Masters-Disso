@@ -7,8 +7,8 @@ import pooling
 import db_helpers
 
 phrase = "Breathable mountain shoes"
-pooling_modes = ["mean_pooling",
-                 "max_pooling_single", "max_pooling_total"]
+pooling_modes = ["mean_pooling", "max_pooling_single", "max_pooling_total",
+                 "mean_pooling_pos_filtered", "max_pooling_pos_filtered_single", "max_pooling_pos_filtered_total"]
 
 bc = BertClient()
 
@@ -16,15 +16,16 @@ embed_cache = []
 data_cache = []
 cache_mode = ""
 
+
 def dist(a, b):
-    if b is not None:
+    if b is not None and a is not None:
         return 1-a.dot(b) / (np.linalg.norm(a) * np.linalg.norm(b))
     else:
         return 100
 
 
 def simple_dist(phrase, pooling_mode, top_cut, ratio):
-    # "mean_pooling" "max_pooling_single" "max_pooling_total" 
+    # "mean_pooling" "max_pooling_single" "max_pooling_total"
     global cache_mode
     global embed_cache
     global data_cache
@@ -77,22 +78,24 @@ def simple_dist(phrase, pooling_mode, top_cut, ratio):
     for score in rev_score_by_link:
         score['title'] = title_by_link[score['href']]
     rev_score_by_link = sorted(rev_score_by_link, key=lambda x: x['score'])
-    #print(rev_score_by_link[0])
-    #print("Sorted")
+    # print(rev_score_by_link[0])
+    # print("Sorted")
     return rev_score_by_link[:10]
 
-phrases = ["warm jacket", "comfy mountain shoes", "large tent", "walking sticks"]
+
+phrases = ["warm jacket", "comfy mountain shoes",
+           "large tent", "walking sticks"]
 
 file = open("variable_results.csv", "w")
 
 line = "mode, top_cut, ratio, title, link, score\n"
 for mode in pooling_modes:
     for p in phrases:
-        for top_cut in range(1,10):
+        for top_cut in range(1, 10):
             for ratio in np.arange(0.1, 1.0, 0.1):
-                print(p, top_cut, ratio)
-                res = simple_dist(p,mode, top_cut, ratio)
+                print(mode, p, top_cut, ratio)
+                res = simple_dist(p, mode, top_cut, ratio)
                 for link in res:
-                    line += mode + ", " + str(top_cut) + ", " + str(ratio) + ", " + link['title'] + ", " + link['href'] + ", " + str(link['score']) + "\n"
-                
+                    line += mode + ", " + p + ", " + str(top_cut) + ", " + str(ratio) + ", " + link['title'] + ", " + link['href'] + ", " + str(link['score']) + "\n"
+
 file.write(line)

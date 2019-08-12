@@ -29,4 +29,4 @@ def find_title_from_link(link):
 
 
 def find_full_embeddings():
-    return coll.find({}, {"_id": 1, "full_pros_embedding": 1, "full_cons_embedding": 1, "full_title_embedding": 1, "pros_token": 1, "cons_tokens": 1, "title_tokens": 1})
+    return coll.find({}, {"_id": 1, "full_pros_embedding": 1, "full_cons_embedding": 1, "full_title_embedding": 1, "pros_tokens": 1, "cons_tokens": 1, "title_tokens": 1})

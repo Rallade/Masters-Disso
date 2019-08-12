@@ -10,6 +10,8 @@ client = MongoClient()
 db = client.disso
 coll = db.cotswaldsdata
 
+print("fixing missing")
+
 db_cursor = coll.find({"Pros": {"$exists": True, "$ne": ""}, "pros_tokens": {"$exists": False}})
 records = [record for record in db_cursor]
 pros = [r['Pros'] for r in records]

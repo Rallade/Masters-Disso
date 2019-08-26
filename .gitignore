@@ -9,3 +9,16 @@ Refactor/clean_data.csv
 Refactor/no_duplicates.csv
 
 */test.py
+Refactor/clean_screw.csv
+search_not_tuned.csv
+Refactor/no_dup_screw.csv
+Refactor/screwfix.csv
+Refactor/variable_results_search_tuned_db_not_tuned.csv
+Refactor/search_not_tuned_decay_single.csv
+Refactor/search_title_appended_tuned.csv
+Refactor/search_title_appended_tuned_no_var.csv
+Refactor/variable_results.csv
+Refactor/variable_results_db_not_tuned.csv
+Refactor/variable_results_not_tuned.csv
+Refactor/variable_results.csv
+Refactor/variable_results.csv

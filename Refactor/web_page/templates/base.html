@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            * {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+            }
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            .search{
+                position:absolute;
+                top:50%;
+                left:50%;
+                transform: translate(-50%,-50%);
+                height: 40px;
+                border-radius: 20px;
+                background-color: #2f3640;
+                padding: 10px;
+            }
+            .button{
+                color: #ffffff;
+                float: right;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: #2f3640;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                text-decoration: none;
+            }
+            .box{
+                border: none;
+                background: none;
+                outline: none;
+                float: left;
+                padding: 0%;
+                color: white;
+                font-size: 16px;
+                line-height: 40px;
+                width: 400px;
+            }
+        </style>
+        <script src="https://kit.fontawesome.com/4852dbdfdc.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        {% block head %}{% endblock %}
+    </head>
+    <body>
+        {% block body %}{% endblock %}
+    </body>
+</html>

@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Home</title>
+<script type="text/javascript">
+    order = {{ order }}
+    $(document).ready(function () {
+        $("#search-button").click(function () {
+            pooling = ""
+            option = $("input[name='radio']:checked").val()
+
+            switch (order) {
+                case 1:
+                    if (option == 1) {
+                        pooling = "mean_pooling";
+                    } else if (option == 2) {
+                        pooling = "max_pooling_total";
+                    } else if (option == 3) {
+                        pooling = "mean_pooling_pos";
+                    }
+                    break;
+                case 2:
+                    if (option == 1) {
+                        pooling = "mean_pooling";
+                    } else if (option == 2) {
+                        pooling = "mean_pooling_pos";
+                    } else if (option == 3) {
+                        pooling = "max_pooling_total";
+                    }
+                    break;
+                case 3:
+                    if (option == 1) {
+                        pooling = "mean_pooling_pos";
+                    } else if (option == 2) {
+                        pooling = "mean_pooling";
+                    } else if (option == 3) {
+                        pooling = "max_pooling_total";
+                    }
+                    break;
+                case 4:
+                    if (option == 1) {
+                        pooling = "mean_pooling_pos";
+                    } else if (option == 2) {
+                        pooling = "max_pooling_total";
+                    } else if (option == 3) {
+                        pooling = "mean_pooling";
+                    }
+                    break;
+                case 5:
+                    if (option == 1) {
+                        pooling = "max_pooling_total";
+                    } else if (option == 2) {
+                        pooling = "mean_pooling_pos";
+                    } else if (option == 3) {
+                        pooling = "mean_pooling";
+                    }
+                    break;
+                case 6:
+                    if (option == 1) {
+                        pooling = "max_pooling_total";
+                    } else if (option == 2) {
+                        pooling = "mean_pooling";
+                    } else if (option == 3) {
+                        pooling = "mean_pooling_pos";
+                    }
+                    break;
+            }
+            window.location.replace(`search/${pooling}/` + $("#search-box").val());
+        });
+        $("#search-box").keyup(function (event) {
+            if (event.keyCode === 13) {
+                $("#search-button").click();
+            }
+        });
+    });
+</script>
+<style>
+    table {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, 100%);
+        height: 40px;
+        border-radius: 20px;
+        background-color: #2f3640;
+        padding: 10px;
+        color: whitesmoke;
+    }
+
+    .container {
+        display: block;
+        position: relative;
+        cursor: pointer;
+        font-size: 22px;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        padding-left: 35px;
+    }
+
+    .container input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .checkmark {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 25px;
+        width: 25px;
+        background-color: #eee;
+        border-radius: 50%;
+    }
+
+    .container:hover input~.checkmark {
+        background-color: #ccc;
+    }
+
+    .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+    }
+
+    .container input:checked~.checkmark:after {
+        display: block;
+    }
+
+    .container .checkmark:after {
+        top: 9px;
+        left: 9px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #2f3640;
+    }
+
+    td {
+        padding: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<p>{{ order }}</p>
+<div class="search">
+    <input class="box" id="search-box" type="text" placeholder="Type to search">
+    <a class="button" id="search-button">
+        <i class="fas fa-search"></i>
+    </a>
+</div>
+<form id="mode_switch">
+    <table>
+        <tr>
+            <td>
+                <p>Method</p>
+            </td>
+            <td>
+                <label class="container">A
+                    <input type="radio" checked="checked" name="radio" id="one" value=1>
+                    <span class="checkmark"></span>
+                </label>
+            </td>
+            <td>
+                <label class="container">B
+                    <input type="radio" name="radio" id="two" value=2>
+                    <span class="checkmark"></span>
+                </label>
+            </td>
+            <td>
+                <label class="container">C
+                    <input type="radio" name="radio" id="three" value=3>
+                    <span class="checkmark"></span>
+                </label>
+            </td>
+        </tr>
+    </table>
+</form>
+{% endblock %}

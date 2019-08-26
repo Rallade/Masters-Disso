@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Search Results</title>
+<style>
+    .search{
+        color: white
+    }
+    a {
+        padding:15px;
+        font-weight: bold;
+        color: white
+    }
+    
+</style>
+{% endblock %}
+
+{% block body %}
+<table class="search" cellpadding="20">
+    {% for result in results %}
+    <tr>
+        <td><a href="{{ result[0] }}" target="_blank">{{ result[1]["title"] }}</a></td>
+        <td>{{ result[1]["reviews"][0] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<form action="/"><button> Go Home </button></form>
+
+{% endblock %}

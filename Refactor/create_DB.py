@@ -56,7 +56,7 @@ for i, record in enumerate(full):
             db.attach_listfields_to_records("pros_tokens", tokens, batch)
             print("Percentage till completion:", str(i*100/len(full)) + "%")
         batch = []
-"""
+
 print('Starting Cons')
 
 full = sorted(full, key=lambda x: len(x['Cons']))
@@ -82,7 +82,7 @@ for i, record in enumerate(full):
             print("Percentage till completion:", str(i*100/len(full)) + "%")
         batch = []
 
-"""
+
 
 print("Starting titles")
 

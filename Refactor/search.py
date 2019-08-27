@@ -5,6 +5,9 @@ from functools import reduce
 import pooling
 import db_helpers
 import heapq
+from multiprocessing import Pool
+pool = Pool(6)
+from itertools import repeat
 
 pooling_modes = ["mean_pooling", "max_pooling_single", "max_pooling_total",
                  "mean_pooling_pos_filtered", "max_pooling_pos_filtered_single", "max_pooling_pos_filtered_total"]
@@ -25,12 +28,26 @@ class Search:
         self.data_cache = []
         self.cache_mode = ""
 
+    def query_many(self, phrases, top_cut=10, decay_factor=1, results=10):
+        res = self.bc.encode(phrases, show_tokens=True)
+        res = list(zip(res[0],repeat(self.pooling_mode), res[1]))
+        queries = list(pool.starmap(pooling.pool, res))
+        queries = list(zip(zip(queries, [r[2] for r in res]), repeat(top_cut), repeat(decay_factor), repeat(results)))
+        print(queries[0])
+        # unfixable error? problem with __reduce__ in one of the dependencies
+        # return list(pool.starmap(self.query, queries))
+        return [self.query(*q) for q in queries]
+
+    #for internal testing only
     def query_cached(self, phrase, top_cut, decay_factor, elements):
-        # "mean_pooling" "max_pooling_single" "max_pooling_total"
         print(self.cache_mode)
         if self.cache_mode != phrase+self.pooling_mode:
-            phrase_embedding, phrase_tokens = self.bc.encode([phrase], show_tokens=True)
-            phrase_embedding = pooling.pool(phrase_embedding[0], self.pooling_mode,phrase_tokens[0])
+            if type(phrase) == str:
+                phrase_embedding, phrase_tokens = self.bc.encode([phrase], show_tokens=True)
+                phrase_embedding = pooling.pool(phrase_embedding[0], self.pooling_mode,phrase_tokens[0])
+            else:
+                phrase_embedding = phrase[0]
+                phrase_tokens = phrase[1]
             data = self.db.find_pros_with_pooling_cached(self.pooling_mode)
             print("Retrieved data")
             formatted = {}
@@ -81,8 +98,13 @@ class Search:
         return sorted(links.items(), key=lambda k_v: k_v[1]['score'], reverse=True)[:elements]
 
     def query(self, phrase, top_cut=10, decay_factor=1, results=10):
-        phrase_embedding, phrase_tokens = self.bc.encode([phrase], show_tokens=True)
-        phrase_embedding = pooling.pool(phrase_embedding[0], self.pooling_mode,phrase_tokens[0])
+        if type(phrase) == str:
+            phrase_embedding, phrase_tokens = self.bc.encode([phrase], show_tokens=True)
+            phrase_embedding = pooling.pool(phrase_embedding[0], self.pooling_mode,phrase_tokens[0])
+        else:
+            phrase_embedding = phrase[0]
+            phrase_tokens = phrase[1]
+            print(phrase_embedding, phrase_tokens)
         data = self.db.find_pros_with_pooling_cached(self.pooling_mode)
         print("Retrieved data")
         formatted = {}

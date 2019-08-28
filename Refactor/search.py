@@ -19,10 +19,11 @@ def dist(a, b):
         return 1
 
 class Search:
-    def __init__(self, db_name, pooling_mode):
+    def __init__(self, db_name, pooling_mode, cache=True):
         self.bc = BertClient()
         self.db = db_helpers.DB_helpers(db_name)
-        self.db.find_pros_with_pooling_cached(pooling_mode)
+        if cache:
+            self.db.find_pros_with_pooling_cached(pooling_mode)
         self.pooling_mode = pooling_mode
         self.embed_cache = []
         self.data_cache = []

@@ -96,3 +96,6 @@ class DB_helpers:
 
     def find_missing_titles(self):
         return self.coll.find({"Product title": {"$exists": True, "$ne": ""}, "title_tokens": {"$exists": False}})
+
+    def upload(self, entries):
+        return self.coll.insert_many(entries).inserted_ids

@@ -3,13 +3,10 @@ from db_helpers import DB_helpers
 from multiprocessing import Pool
 pool = Pool(6)
 import time
-import stanfordnlp
 import re
 import nltk
 
-db = DB_helpers("screwfixdata")
-
-def create_basic_embeddings():
+def create_basic_embeddings(db):
     batch_size = 1500
     i = 0
     t0 = time.time()
@@ -65,9 +62,9 @@ def create_basic_embeddings():
     t1 = time.time()
     print(t1-t0)
 
-def create_basic_embeddings_appended_title():
+def create_basic_embeddings_appended_title(db):
     batch_size = 1500
-    i = 33000
+    i = 0
     t0 = time.time()
     while True:
         records = db.paginate(batch_size, i)
@@ -169,8 +166,7 @@ def fix_tokens(tokens, embeddings):
             new_embeddings.insert(i+1,new_embeddings[i])
     return new_tokens, new_embeddings
 
-
-def create_nltk_pos_embeddings_appended_title():
+def create_nltk_pos_embeddings_appended_title(db):
     data = db.find_full_embeddings()
     k = 0
     for record in data:
@@ -301,9 +297,9 @@ def create_nltk_pos_embeddings_appended_title():
         k += 1
         if k%100 == 0:
             print("Completed records:", k)
-    pool_pos_embeddings()
+    pool_pos_embeddings(db)
 
-def create_nltk_pos_embeddings():
+def create_nltk_pos_embeddings(db):
     data = db.find_full_embeddings()
     k = 0
     for record in data:
@@ -385,9 +381,9 @@ def create_nltk_pos_embeddings():
         k += 1
         if k%100 == 0:
             print("Completed records:", k)
-    pool_pos_embeddings()
+    pool_pos_embeddings(db)
         
-def pool_pos_embeddings():
+def pool_pos_embeddings(db):
     batch_size = 1500
     i = 0
     t0 = time.time()
@@ -443,70 +439,6 @@ def pool_pos_embeddings():
     t1 = time.time()
     print(t1-t0)
 
-
-def create_dependency_embeddings():
-    data = db.find_full_embeddings()
-    nlp = stanfordnlp.Pipeline()
-
-    for record in data:
-        try:
-            pros_tokens, pros_embeddings = remake_tokens(record['pros_tokens'], record['full_pros_embedding'])
-            pros_embeddings = simplify_nested_embeddings(pros_embeddings)
-            pros_tokens, pros_embeddings = fix_tokens(pros_tokens, pros_embeddings)
-            pros = " ".join(pros_tokens[1:-1])
-            pos_pros = [word for sent in nlp(pros).sentences for word in sent.words]
-            #print(list(zip(pros_tokens[1:-1], pos_pros)))
-            new_pros_embeddings = []
-            for i, pos in enumerate(pos_pros):
-                if pos.text != pros_tokens[i+1]:
-                    pros_tokens, pros_embeddings = fix_tokens(pros_tokens, pros_embeddings)
-                    [print(pp) for pp in pos_pros]
-                    print(pros_tokens)
-                    print(pros)
-                    print(pos.text, pros_tokens[i+1])
-                    raise ValueError
-                if pos.upos == 'ADJ' or pos.upos == 'VERB' or pos.upos == 'NOUN':
-                    new_pros_embeddings.append(pros_embeddings[i+1]) #account for [CLS] token
-            if new_pros_embeddings:
-                db.update_one("pos_filtered_pros_embedding", new_pros_embeddings, record)
-        except KeyError:
-            pass
-        try:
-            cons_tokens, cons_embeddings = remake_tokens(record['cons_tokens'], record['full_cons_embedding'])
-            cons_embeddings = simplify_nested_embeddings(cons_embeddings)
-            cons_tokens, cons_embeddings = fix_tokens(cons_tokens, cons_embeddings)
-            cons = " ".join(cons_tokens[1:-1])
-            pos_cons = [word for sent in nlp(cons).sentences for word in sent.words]
-            new_cons_embeddings = []
-            for i, pos in enumerate(pos_cons):
-                if pos.text != cons_tokens[i+1]:
-                    [print(pc) for pc in pos_cons]
-                    print(cons_tokens)
-                    print(cons)
-                    print(pos.text, cons_tokens[i+1])
-                    raise ValueError
-                if pos.upos == 'ADJ' or pos.upos == 'VERB' or pos.upos == 'NOUN':
-                    new_cons_embeddings.append(cons_embeddings[i+1]) #account for [CLS] token
-            if new_cons_embeddings:
-                db.update_one("pos_filtered_cons_embedding", new_cons_embeddings, record)
-        except KeyError:
-            pass
-        try:
-            title_tokens, title_embeddings = remake_tokens(record['title_tokens'], record['full_title_embedding'])
-            title_embeddings = simplify_nested_embeddings(title_embeddings)
-            title = " ".join(title_tokens[1:-1])
-            pos_title = [word.upos for sent in nlp(title).sentences for word in sent.words]
-            #print(list(zip(title_tokens[1:-1], pos_title)))
-            new_title_embeddings = []
-            for i, pos in enumerate(pos_title):
-                if pos == 'ADJ' or pos == 'NOUN':
-                    new_title_embeddings.append(title_embeddings[i+1]) #account for [CLS] token
-            if new_title_embeddings:
-                db.update_one("pos_filtered_title_embedding", new_title_embeddings, record)
-        except KeyError:
-            pass
-        
-        
 def simplify_nested_embeddings(embeddings):
     new = []
     for embedding in embeddings:

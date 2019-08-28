@@ -6,7 +6,7 @@ from search import Search
 from bert_serving.server.helper import get_args_parser
 from bert_serving.server import BertServer
 args = get_args_parser().parse_args(['-model_dir', '../../multi_cased_L-12_H-768_A-12/',
-                                     '-tuned_model_dir', '../../fine_tune/finetuned_full_lm_tf',
+                                     '-tuned_model_dir', '../fine_tune/finetuned_full_lm_tf',
                                      '-ckpt_name', 'fine_tuned_tf.ckpt',
                                      '-pooling_strategy', "NONE",
                                      '-max_seq_len', 'NONE',

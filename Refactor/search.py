@@ -39,65 +39,6 @@ class Search:
         # return list(pool.starmap(self.query, queries))
         return [self.query(*q) for q in queries]
 
-    #for internal testing only
-    def query_cached(self, phrase, top_cut, decay_factor, elements):
-        print(self.cache_mode)
-        if self.cache_mode != phrase+self.pooling_mode:
-            if type(phrase) == str:
-                phrase_embedding, phrase_tokens = self.bc.encode([phrase], show_tokens=True)
-                phrase_embedding = pooling.pool(phrase_embedding[0], self.pooling_mode,phrase_tokens[0])
-            else:
-                phrase_embedding = phrase[0]
-                phrase_tokens = phrase[1]
-            data = self.db.find_pros_with_pooling_cached(self.pooling_mode)
-            print("Retrieved data")
-            formatted = {}
-            self.cache_mode = phrase+self.pooling_mode
-            self.embed_cache = phrase_embedding
-            for datum in data:
-                temp = {}
-                review_emb = datum[self.pooling_mode + '_pros']
-                title_emb = datum[self.pooling_mode + '_title']
-                rev_score = dist(phrase_embedding, review_emb)
-                title_score = dist(phrase_embedding, title_emb)
-                title = datum['Product title']
-                temp['rev_score'] = rev_score
-                temp['title_score'] = title_score
-                temp['title'] = title
-                temp['review'] = datum['Pros']
-                try:
-                    formatted[datum['href']].append(temp)
-                except KeyError:
-                    formatted[datum['href']] = [temp]
-            for link in formatted:
-                formatted[link] = sorted(formatted[link], key=lambda x: x['rev_score'])
-                for i, data in enumerate(formatted[link]):
-                    if i < top_cut:
-                        data['rev_score'] = (1/data['rev_score']) / ((i*decay_factor)+1)
-                    else:
-                        break
-            self.data_cache = formatted
-            print("Sorted data")
-        else:
-            phrase_embedding = self.embed_cache
-            formatted = self.data_cache
-        
-        links = {}
-        
-        for link in self.data_cache:
-            score = 0
-            reviews = []
-            title = self.data_cache[link][0]["title"]
-            for i, data in enumerate(self.data_cache[link]):
-                if i < top_cut:
-                    score += data['rev_score']
-                    reviews.append(data['review'])
-                else:
-                    break
-            links[link] = {"score": score, "reviews": reviews, "title": title}
-        
-        return sorted(links.items(), key=lambda k_v: k_v[1]['score'], reverse=True)[:elements]
-
     def query(self, phrase, top_cut=10, decay_factor=1, results=10):
         if type(phrase) == str:
             phrase_embedding, phrase_tokens = self.bc.encode([phrase], show_tokens=True)

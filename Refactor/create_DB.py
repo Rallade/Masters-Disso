@@ -38,7 +38,7 @@ fine_tune.main.tune(db, epochs=3, train_batch_size=32, gradient_accumulation_ste
 Encoding
 """
 from base_embeddings import create
-create(db, number_of_processors=6, batch_size=256)
+create(db, number_of_processors=1, batch_size=256) #No of GPU (or CPUs as a fallback)
 
 #band-aid solution
 import fix_missing

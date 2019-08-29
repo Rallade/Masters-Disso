@@ -3,9 +3,10 @@ client = MongoClient()
 db = client.disso
 coll = db.cotswaldsdata
 from add_pooling_to_DB import remake_tokens, simplify_nested_embeddings
-
+from nltk.corpus import stopwords
 cursor = coll.find()
 
+sw = stopwords.words('english')
 
 count = {}
 
@@ -16,7 +17,8 @@ for record in cursor:
             try:
                 count[token] += 1
             except KeyError:
-                count[token] = 1
+                if token.isalnum():
+                    count[token] = 1
     except:
         pass
     try:
@@ -25,15 +27,21 @@ for record in cursor:
             try:
                 count[token] += 1
             except KeyError:
-                count[token] = 1
+                if token.isalnum():
+                    count[token] = 1
     except:
         pass
-    title_tokens, title_embeddings = remake_tokens(record['title_tokens'], record['full_title_embedding'])
-    for token in title_tokens:
-        try:
-            count[token] += 1
-        except KeyError:
-            count[token] = 1
+
 
 sorted_counts = sorted(count.items(), key=lambda x: x[1], reverse=True)
-print(sorted_counts[:200])
+interest = sorted_counts[:30]
+print(interest)
+y = range(len(interest))
+import matplotlib.pyplot as plt
+
+plt.bar(y, [i[1] for i in interest])
+plt.xticks(y, [i[0] for i in interest])
+plt.xlabel('Word', fontsize=10)
+plt.ylabel('Frequency', fontsize=10)
+plt.show()
+#plt.bar(y, [])

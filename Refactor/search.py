@@ -148,7 +148,7 @@ class Search:
         
         return sorted(links.items(), key=lambda k_v: k_v[1]['score'], reverse=True)[:results]
 
-    def query_hash(self, phrase, top_cut=10, decay_factor=1, results=10):
+    def query_heap(self, phrase, top_cut=10, decay_factor=1, results=10):
         phrase_embedding, phrase_tokens = self.bc.encode([phrase], show_tokens=True)
         phrase_embedding = pooling.pool(phrase_embedding[0], self.pooling_mode,phrase_tokens[0])
         data = self.db.find_pros_with_pooling(self.pooling_mode)

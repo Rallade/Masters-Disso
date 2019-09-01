@@ -1,6 +1,7 @@
 import csv
 
-def cleanup(raw_data_file_name, clean_data_file_name):
+def cleanup(raw_data_file_name: str, clean_data_file_name: str):
+    # If the reviews are in the pros and cons format
     if raw_data_file_name == "cotswolds.csv":
         with open(raw_data_file_name, encoding= "utf-8") as old:
             with open(clean_data_file_name, mode='w', encoding= "utf-8") as new:
@@ -16,11 +17,14 @@ def cleanup(raw_data_file_name, clean_data_file_name):
                     if (new_row['Cons'] == "Reviewer left no comment"):
                         new_row['Cons'] = ""
                     if (new_row['Pros'] != "" or new_row['Cons'] != ""):
+                        # Remove and  replace characters as necessary for BERT
                         new_row['Pros'] = new_row['Pros'].replace('\n', ' ||| ')
                         new_row['Cons'] = new_row['Cons'].replace('\n', ' ||| ')
                         new_row['Pros'] = new_row['Pros'].replace('´', "'" )
                         new_row['Cons'] = new_row['Cons'].replace('´', "'")
                         writer.writerow(new_row)
+
+    #if the reviews have a "would you recommend?" question
     elif raw_data_file_name == "screwfix.csv":
         with open(raw_data_file_name, encoding= "utf-8") as old:
             with open(clean_data_file_name, mode='w', encoding= "utf-8") as new:

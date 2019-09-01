@@ -50,21 +50,28 @@ class Search:
         data = self.db.find_pros_with_pooling_cached(self.pooling_mode)
         print("Retrieved data")
         formatted = {}
+
         for datum in data:
-            temp = {}
-            review_emb = datum[self.pooling_mode + '_pros']
-            title_emb = datum[self.pooling_mode + '_title']
-            rev_score = dist(phrase_embedding, review_emb)
-            title_score = dist(phrase_embedding, title_emb)
-            title = datum['Product title']
-            temp['rev_score'] = rev_score
-            temp['title_score'] = title_score
-            temp['title'] = title
-            temp['review'] = datum['Pros']
+            #any data that wants to be preserved for the user to
+            #receive gets placed in temp
             try:
-                formatted[datum['href']].append(temp)
+                temp = {}
+                review_emb = datum[self.pooling_mode + '_pros']
+                title_emb = datum[self.pooling_mode + '_title']
+                rev_score = dist(phrase_embedding, review_emb)
+                title_score = dist(phrase_embedding, title_emb)
+                title = datum['Product title']
+                temp['rev_score'] = rev_score
+                temp['title_score'] = title_score
+                temp['title'] = title
+                temp['review'] = datum['Pros']
+                try:
+                    formatted[datum['href']].append(temp)
+                except KeyError:
+                    formatted[datum['href']] = [temp]
             except KeyError:
-                formatted[datum['href']] = [temp]
+                #print("Missing embedding for", datum['_id'])
+                pass
         for link in formatted:
             formatted[link] = sorted(formatted[link], key=lambda x: x['rev_score'])
             for i, data in enumerate(formatted[link]):
@@ -120,19 +127,20 @@ class Search:
 
 def make_file():
     pooling_modes = ["mean_pooling", "max_pooling_total",
-                    "mean_pooling_pos_filtered", "max_pooling_pos_filtered_total"]
+                    "max_pooling_single"]
+    pooling_modes.extend(["mean_pooling_pos_filtered", "max_pooling_pos_filtered_single", "max_pooling_pos_filtered_total"])
     phrases = ["warm jacket", "comfy mountain shoes",
             "large tent", "walking poles", "zapatos confortables"]
 
-    file = open("search_title_appended_tuned_no_var.csv", "w")
-    line = "mode, phrase, top_cut, decay, title, link, score\n"
+    file = open("search_tuned_title_appended.csv", "w")
+    line = "mode, phrase, top_cut, decay, title, link, score, review\n"
     for mode in pooling_modes:
         s = Search("cotswaldsdata", mode)
         for p in phrases:
             top_cut = 10
             decay = 1
             print(mode, p, top_cut, decay)
-            res = s.query_cached(p, top_cut, decay, 10)
+            res = s.query(p, top_cut, decay, 10)
             for link in res:
                 line += mode + ", " + p + ", " + str(top_cut) + ", " + str(decay) + ", " + link[1]['title'] + ", " + link[0] + ", " + str(link[1]['score']) + ", " + '"' + link[1]['reviews'][0] + '"' + "\n"
 

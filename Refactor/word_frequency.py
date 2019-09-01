@@ -17,7 +17,7 @@ for record in cursor:
             try:
                 count[token] += 1
             except KeyError:
-                if token.isalnum():
+                if token.isalnum() and token not in sw:
                     count[token] = 1
     except:
         pass
@@ -27,7 +27,7 @@ for record in cursor:
             try:
                 count[token] += 1
             except KeyError:
-                if token.isalnum():
+                if token.isalnum() and token not in sw:
                     count[token] = 1
     except:
         pass
@@ -36,6 +36,7 @@ for record in cursor:
 sorted_counts = sorted(count.items(), key=lambda x: x[1], reverse=True)
 interest = sorted_counts[:30]
 print(interest)
+[print(i[0], ",", i[1]) for i in interest]
 y = range(len(interest))
 import matplotlib.pyplot as plt
 
